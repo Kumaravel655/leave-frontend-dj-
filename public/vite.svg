@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" className="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+  <path fill="none" d="M0 0h24v24H0z" />
+  <path fill="url(#calendarGradient)" d="M19 3h-2V1h-2v2H9V1H7v2H5c-1.104 0-1.99.896-1.99 2L3 19c0 1.104.896 1.99 2 1.99h14c1.104 0 1.99-.896 1.99-2L21 5c0-1.104-.896-1.99-2-1.99zM19 19H5V8h14v11z" />
+  <defs>
+    <linearGradient id="calendarGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+      <stop offset="0%" stopColor="#41D1FF" />
+      <stop offset="100%" stopColor="#BD34FE" />
+    </linearGradient>
+  </defs>
+</svg>
