@@ -84,7 +84,7 @@ const SignUp = () => {
       <div className="w-full max-w-md">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <Calendar className="h-12 w-12 text-[#4D49B3]" />
+          <img src="/sec.png" alt="Logo" className="h-40 w-40" />
           </div>
           <h1 className="text-2xl font-bold text-[#4D49B3] mb-5">SIGN UP</h1>
         </div>
@@ -168,7 +168,7 @@ const SignUp = () => {
 
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-600">Already have an account?</span>
-          <a href="#" className="font-medium text-[#4D49B3] hover:text-[#3d3a8f]"> Login</a>
+          <a onClick={() => navigate('/')} className="font-medium text-[#4D49B3] hover:text-[#3d3a8f] cursor-pointer">Login</a>
         </div>
       </div>
     </div>

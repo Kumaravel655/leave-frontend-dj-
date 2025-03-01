@@ -49,9 +49,10 @@ const ManagerLoginPage = () => {
       <div className="w-full max-w-md">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <Calendar className="h-12 w-12 text-[#4D49B3]" />
+          <img src="/sec.png" alt="Logo" className="h-40 w-40" />
+
           </div>
-          <h1 className="text-2xl font-bold text-[#4D49B3] mb-5">Manager LOGIN</h1>
+          <h1 className="text-2xl font-bold text-[#4D49B3] mb-5">Admin LOGIN</h1>
         </div>
 
         <form className="space-y-6" onSubmit={HandleLogin}>

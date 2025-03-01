@@ -20,6 +20,8 @@ import Userloginprotected from './pages/UserProtectedRoute';
 import ProtectedRoute from './pages/UserHomeProtectedRoute';
 import AdminprotectedRoute from './pages/AdminProtectedRoute';
 import ErrorPage from './pages/error/ErrorPage';
+import LoginPage from './components/Common/LoginPage/LoginPage';
+import SignUp from './components/employe/Signup/SignUp';
 
 function App() {
 
@@ -40,7 +42,9 @@ function App() {
                   
                 }
               />
-      <Route path="/:mode" element={<Home />} />
+      <Route path="/:mode" element={<LoginPage/>} />
+      <Route path="/signup" element={<SignUp/>} />
+      <Route path="/login" element={<LoginPage/>} />
       <Route path="/dashbord" element={<ProtectedRoute><Dashbord/></ProtectedRoute>} />
       <Route path="/requests" element={<Request/>} />
       <Route path="/lists" element={<ProtectedRoute><LeaveList/></ProtectedRoute>} />
