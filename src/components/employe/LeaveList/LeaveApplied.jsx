@@ -27,6 +27,8 @@ const LeaveApplication = () => {
     endDate: '',
     reason: '',
     document: null,
+    people: '',
+    link: '',
   });
   
   const [currentLeave, setCurrentLeave] = useState(null);
@@ -78,7 +80,12 @@ const LeaveApplication = () => {
 
   const handleSaveLeave = (e) => {
     e.preventDefault();
-
+  
+    if (!validateForm()) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+  
     if (currentLeave) {
       setLeaves(leaves.map((leave) =>
         leave.id === currentLeave.id ? { ...leave, ...formData } : leave
@@ -86,7 +93,7 @@ const LeaveApplication = () => {
     } else {
       setLeaves([...leaves, { id: leaves.length + 1, ...formData, status: 'Pending' }]);
     }
-
+  
     toggleModal();
   };
   
@@ -238,162 +245,150 @@ const LeaveApplication = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-semibold mb-4">Leave Applications</h1>
-      
-      <button 
-        onClick={() => toggleModal()}
-        className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
-      >
-        Apply for Leave
-      </button>
-
-      {/* Leave List */}
-      <div className="space-y-4">
-        {displayedLeaves.map((leave) => (
-          <div key={leave.id} className="flex justify-between items-center p-4 bg-gray-100 rounded-md shadow-sm">
-            <div>
-              <p className="text-lg font-medium">{leave.leave_type}</p>
-              <p className="text-sm text-gray-500">Start Date : {leave.start_date}</p>
-              <p className="text-sm text-gray-500">End Date : {leave.end_date}</p>
-              Description:
-  {expandedDescriptions[leave.id] 
-    ? leave.reason 
-    : `${leave.reason.split(" ").slice(0, 10).join(" ")}... `}
-  
-  {leave.reason.split(" ").length > 10 && (
+    <h1 className="text-2xl font-semibold mb-4">Leave Applications</h1>
     <button 
-      onClick={() => toggleDescription(leave.id)} 
-      className="text-blue-500 hover:underline"
+      onClick={() => toggleModal()}
+      className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4"
     >
-      {expandedDescriptions[leave.id] ? 'Read Less' : 'Read More'}
+      Apply for Leave
     </button>
-  )}
-              {leave.document && (
-      <a 
-        href={`${API_URL}${leave.document}`} 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="text-blue-500 hover:underline mt-2 block"
-      >
-        View Document
-      </a>
-    )}
-    <p className="text-sm text-gray-500">Status : {leave.status}</p>
-
-
-            </div>
-            {canShowDelete(leave.start_date) && leave.status === "pending" && (
-              <button 
-                className="text-red-500 hover:text-red-700 ml-[800px]"
-                onClick={() => handleDeleteLeave(leave.id)}
+    <div className="space-y-4">
+      {displayedLeaves.map((leave) => (
+        <div key={leave.id} className="flex justify-between items-center p-4 bg-gray-100 rounded-md shadow-sm">
+          <div>
+            <p className="text-lg font-medium">{leave.leave_type}</p>
+            <p className="text-sm text-gray-500">Start Date : {leave.start_date}</p>
+            <p className="text-sm text-gray-500">End Date : {leave.end_date}</p>
+            <p className="text-sm text-gray-500">Reason : {leave.reason}</p>
+            {leave.document && (
+              <a 
+                href={`${API_URL}${leave.document}`} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-blue-500 hover:underline mt-2 block"
               >
-                <FaTrash />
-              </button>
+                View Document
+              </a>
             )}
+            <p className="text-sm text-gray-500">Status : {leave.status}</p>
+          </div>
+          {canShowDelete(leave.start_date) && leave.status === "pending" && (
+            <button 
+              className="text-red-500 hover:text-red-700"
+              onClick={() => handleDeleteLeave(leave.id)}
+            >
+              <FaTrash />
+            </button>
+          )}
           {leave.status === "pending" && (
-  <button 
-    className="text-blue-500 hover:text-blue-700"
-    onClick={() => toggleModal(leave)}
-  >
-    ✏️
-  </button>
-)}
-          </div>
-        ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        {[...Array(Math.ceil(leaves.length / ITEMS_PER_PAGE)).keys()].map((pageNum) => (
-          <button
-            key={pageNum}
-            onClick={() => handlePageChange(pageNum + 1)}
-            className={`px-4 py-2 mx-1 ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            {pageNum + 1}
-          </button>
-        ))}
-      </div>
-
-
-      {/* Apply/Edit Leave Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">{currentLeave ? 'Edit Leave' : 'Apply for Leave'}</h2>
-            {/* Form for applying/editing leave */}
-            <form onSubmit={Handleleave}>
-  <label className="block mb-2">Leave Type:</label>
-  <select 
-    name="type" 
-    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-    value={formData.type } // Bind value to state
-    onChange={(e) => setFormData({ ...formData, type: e.target.value })} // Handle change
-    required
-  >
-    <option value="" disabled>Select leave type</option>
-    <option value="Sick Leave">Sick Leave</option>
-    <option value="Casual Leave">Casual Leave</option>
-    <option value="Annual Leave">Annual Leave</option>
-    {/* Add more leave options as needed */}
-  </select>
-
-  <label className="block mb-2">Start Date:</label>
-  <input 
-    type="date" 
-    name="startDate"
-    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-    value={formData.startDate} 
-    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
-    required 
-  />
-
-  <label className="block mb-2">End Date:</label>
-  <input 
-    type="date" 
-    name="endDate"
-    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-    value={formData.endDate} 
-    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} 
-    required 
-  />
-
-  <label className="block mb-2">Reason:</label>
-  <textarea 
-    name="reason"
-    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-    placeholder="Describe the reason for your leave, e.g., 'medical appointment,' 'family emergency,' etc."
-    value={formData.reason} 
-    onChange={(e) => setFormData({ ...formData, reason: e.target.value })} 
-    required 
-  />
-
-  <label className="block mb-2">Upload Document:</label>
-  <input 
-    type="file" 
-    name="document"
-    accept=".pdf, .jpg, .jpeg, .png" 
-    className="border border-gray-300 rounded-md w-full p-2 mb-4"
-    onChange={(e) => setFormData({ ...formData, document: e.target.files[0] })} 
-    
-  />
-
-  <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md w-full">
-    {currentLeave ? 'Update Leave' : 'Submit'}
-  </button>
-
-  <button
-    type="button"
-    onClick={toggleModal}
-    className="mt-2 w-full text-gray-500 hover:underline"
-  >
-    Cancel
-  </button>
-</form>
-
-          </div>
+            <button 
+              className="text-blue-500 hover:text-blue-700"
+              onClick={() => toggleModal(leave)}
+            >
+              ✏️
+            </button>
+          )}
         </div>
-      )}
+      ))}
     </div>
-  );
+    <div className="flex justify-center mt-4">
+      {[...Array(Math.ceil(leaves.length / ITEMS_PER_PAGE)).keys()].map((pageNum) => (
+        <button
+          key={pageNum}
+          onClick={() => handlePageChange(pageNum + 1)}
+          className={`px-4 py-2 mx-1 ${currentPage === pageNum + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+        >
+          {pageNum + 1}
+        </button>
+      ))}
+    </div>
+    {isModalOpen && (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+          <h2 className="text-xl font-semibold mb-4">{currentLeave ? 'Edit Leave' : 'Apply for Leave'}</h2>
+          <form onSubmit={Handleleave}>
+            <label className="block mb-2">Leave Type:</label>
+            <select 
+              name="type" 
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              value={formData.type} 
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })} 
+              required
+            >
+              <option value="" disabled>Select leave type</option>
+              <option value="Sick Leave">Sick Leave</option>
+              <option value="Casual Leave">Casual Leave</option>
+              <option value="Annual Leave">Annual Leave</option>
+            </select>
+            <label className="block mb-2">Start Date:</label>
+            <input 
+              type="date" 
+              name="startDate"
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              value={formData.startDate} 
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
+              required 
+            />
+            <label className="block mb-2">End Date:</label>
+            <input 
+              type="date" 
+              name="endDate"
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              value={formData.endDate} 
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })} 
+              required 
+            />
+            <label className="block mb-2">Reason:</label>
+            <textarea 
+              name="reason"
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              placeholder="Describe the reason for your leave"
+              value={formData.reason} 
+              onChange={(e) => setFormData({ ...formData, reason: e.target.value })} 
+              required 
+            />
+            <label className="block mb-2">Upload Document:</label>
+            <input 
+              type="file" 
+              name="document"
+              accept=".pdf, .jpg, .jpeg, .png" 
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              onChange={(e) => setFormData({ ...formData, document: e.target.files[0] })} 
+            />
+            <label className="block mb-2">People:</label>
+            <input 
+              type="text" 
+              name="people"
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              placeholder="Enter names of people involved"
+              value={formData.people} 
+              onChange={(e) => setFormData({ ...formData, people: e.target.value })} 
+            />
+            <label className="block mb-2">Link:</label>
+            <input 
+              type="url" 
+              name="link"
+              className="border border-gray-300 rounded-md w-full p-2 mb-4"
+              placeholder="Enter a relevant link"
+              value={formData.link} 
+              onChange={(e) => setFormData({ ...formData, link: e.target.value })} 
+            />
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md w-full">
+              {currentLeave ? 'Update Leave' : 'Submit'}
+            </button>
+            <button
+              type="button"
+              onClick={toggleModal}
+              className="mt-2 w-full text-gray-500 hover:underline"
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
+      </div>
+    )}
+  </div>
+);
 };
 
 export default LeaveApplication;
